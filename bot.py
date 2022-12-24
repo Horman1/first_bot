@@ -25,12 +25,12 @@ def main():
 
     logging.info('Бот запускается')
 
-    #dp = Updater(settings.API_KEY).dispatcher
-    Updater(settings.API_KEY).dispatcher.add_handler(CommandHandler("start", greet_user))
-    Updater(settings.API_KEY).dispatcher.add_handler(MessageHandler(Filters.text, talk_to_me))# Обработчик сообщений от юзера
+    dp = mybot.dispatcher
+    dp.add_handler(CommandHandler("start", greet_user))
+    dp.add_handler(MessageHandler(Filters.text, talk_to_me))# Обработчик сообщений от юзера
 
-    Updater(settings.API_KEY).start_polling()
-    Updater(settings.API_KEY).idle()
+    mybot.start_polling()
+    mybot.idle()
 
 
 main()
