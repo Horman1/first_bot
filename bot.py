@@ -23,13 +23,13 @@ def talk_to_me(update, context):
     update.message.reply_text(user_text)
 
 def guess_number(update, context):
-    print(context.args)
-    if context.args: #context.args - то что ввёл пользователь после команды /guess
+    print(context.args)  # context.args - то что ввёл пользователь после команды /guess
+    if context.args:  # если context.args вообще есть в сообщении от пользователя, то далее:
         try:
             user_number = int(context.args[0])
             message = f' Ваше число {user_number}'
         except(TypeError, ValueError):
-            message = 'Введите целое число'
+            message = 'Введите целое число, а не ебанину'
     else:
         message = 'Введите число:'
     update.message.reply_text(message)
