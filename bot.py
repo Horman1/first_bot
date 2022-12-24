@@ -1,4 +1,5 @@
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+from random import randint
 import logging
 import settings
 
@@ -22,12 +23,23 @@ def talk_to_me(update, context):
                  update.message.text)
     update.message.reply_text(user_text)
 
+def random_number(user_number):
+    bot_number = randint(user_number - 10, user_number + 10)
+    print(bot_number)
+    if user_number > bot_number:
+        message = f'Ваше число {user_number}, моё число {bot_number}, вы выиграли.'
+    elif user_number == bot_number:
+        message = f'Ваше число {user_number}, моё число {bot_number}, ничья.'
+    else:
+        message = f"Ваше число {user_number}, моё число {bot_number}, я выиграл."
+    return message
+
 def guess_number(update, context):
     print(context.args)  # context.args - то что ввёл пользователь после команды /guess
     if context.args:  # если context.args вообще есть в сообщении от пользователя, то далее:
         try:
             user_number = int(context.args[0])
-            message = f' Ваше число {user_number}'
+            message = random_number(user_number)
         except(TypeError, ValueError):
             message = 'Введите целое число, а не ебанину'
     else:
