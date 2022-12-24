@@ -12,10 +12,10 @@ def greet_user(update, context):
      text = 'Бот запущен'
      logging.info(text)
      update.message.reply_text(
-         f'{text}. Привет {update.message.chat.username}, это персональный бот Кири, который спросит с тебя за базар.')
+         f'{text}. Привет {update.message.chat.username}, как жизнь?')
 
 def talk_to_me(update, context):
-    user_text = "Привет {}, я интерактивный Telegram Bot".format(update.message.chat.username)
+    user_text = "Hello {}, я интерактивный Telegram Bot".format(update.message.chat.username)
     print(update.message)
     logging.info('User: %s, Chat_id: %s, Message: %s', update.message.chat.username, update.message.chat.id, update.message.text)
     update.message.reply_text(user_text)
@@ -27,7 +27,7 @@ def main():
 
     dp = mybot.dispatcher
     dp.add_handler(CommandHandler("start", greet_user))
-    dp.add_handler(MessageHandler(Filters.text, talk_to_me))# Обработчик сообщений от юзера
+    dp.add_handler(MessageHandler(Filters.text, talk_to_me)) # Обработчик сообщений от юзера
 
     mybot.start_polling()
     mybot.idle()
