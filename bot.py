@@ -1,3 +1,4 @@
+from emoji import emojize  # emojize - функция которая превращает текстовые изображения emoji в иконку эмоции.
 from glob import glob
 import logging
 from random import randint, choice
@@ -11,19 +12,28 @@ logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s',
                     )
 
 
+def get_smile():
+    smile = choice(settings.USER_EMOJI)  # Берем случайный смайлик из списка settings
+    smile = emojize(smile, language='alias')  #Используем функцию emojize в которую передаем переменную smile,
+    # указываем что случайно выбранный текст смайла надо преобразовать в иконку смайла
+    # alias - так называются текстовые обозначения смайликов
+    return smile
+
 def greet_user(update, context):
     text = 'Бот запущен'
-    logging.info(text)
+    smile = get_smile()
+    logging.info(text)  #
     update.message.reply_text(
-        f'{text}. Привет {update.message.chat.username}, как жизнь?')
-
+        f'{text}. Привет {update.message.chat.username}, как жизнь {smile}?')
 
 def talk_to_me(update, context):
     user_text = "Hello {}, я интерактивный Telegram Bot".format(update.message.chat.username)
-    print(update.message)
+    print(update.message.text)
+    print(user_text)
     logging.info('User: %s, Chat_id: %s, Message: %s', update.message.chat.username, update.message.chat.id,
                  update.message.text)
     update.message.reply_text(user_text)
+
 
 def random_number(user_number):
     bot_number = randint(user_number - 10, user_number + 10)
@@ -50,7 +60,7 @@ def guess_number(update, context):
 
 def send_mem_image(update, context):
     mem_image_list = glob('images/*.jpg')  # Кладем в переменную список картинок подходящих под шаблон.
-    mem_pic_filename = choice(mem_image_list)  # Кладем в переменную одно название картинки
+    mem_pic_filename = choice(mem_image_list)  # Кладем в переменную одну картинку на выбор.
     chat_id = update.effective_chat.id  # id чата с текущим пользователем
     context.bot.send_photo(chat_id=chat_id, photo=open(mem_pic_filename, 'rb'))  # Функция send_photo объекта bot в
     # context. Отправляет картинку пользователю. 'rb' формат read binary.
