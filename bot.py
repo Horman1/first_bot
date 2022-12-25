@@ -2,6 +2,7 @@ from emoji import emojize  # emojize - функция которая превр�
 from glob import glob
 import logging
 from random import randint, choice
+from telegram import ReplyKeyboardMarkup
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 
 import settings
@@ -12,19 +13,26 @@ logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s',
                     )
 
 
-def get_smile():
-    smile = choice(settings.USER_EMOJI)  # Берем случайный смайлик из списка settings
-    smile = emojize(smile, language='alias')  #Используем функцию emojize в которую передаем переменную smile,
-    # указываем что случайно выбранный текст смайла надо преобразовать в иконку смайла
-    # alias - так называются текстовые обозначения смайликов
-    return smile
+def get_smile(user_data):  # user_data - это словарь, который мы передаем функции get_smile
+    if "emoji" not in user_data:  # Проверяем есть ли в этом словаре ключ "emoji", на первый раз нет и мы генерим новый смайлик
+        smile = choice(settings.USER_EMOJI)  # Берем случайный смайлик из списка settings
+        return emojize(smile, language='alias')  # Возвращаем функцию emojize в которую передаем переменную smile,
+        # указываем что случайно выбранный текст смайла надо преобразовать в иконку смайла
+        # alias - так называются текстовые обозначения смайликов
+    else:
+        return user_data["emoji"]  # если "emoji" есть то отдаем
+
 
 def greet_user(update, context):
     text = 'Бот запущен'
-    smile = get_smile()
-    logging.info(text)  #
+    context.user_data["emoji"] = get_smile(context.user_data)
+    mem_keyboard = ReplyKeyboardMarkup([['/mem']])
+    logging.info(text)
     update.message.reply_text(
-        f'{text}. Привет {update.message.chat.username}, как жизнь {smile}?')
+        f'{text}. Привет {update.message.chat.username}, как жизнь {context.user_data["emoji"]}?',
+        reply_markup=mem_keyboard
+    )
+
 
 def talk_to_me(update, context):
     user_text = "Hello {}, я интерактивный Telegram Bot".format(update.message.chat.username)
@@ -46,6 +54,7 @@ def random_number(user_number):
         message = f"Ваше число {user_number}, моё число {bot_number}, я выиграл."
     return message
 
+
 def guess_number(update, context):
     print(context.args)  # context.args - то что ввёл пользователь после команды /guess
     if context.args:  # если context.args вообще есть в сообщении от пользователя, то далее:
@@ -57,6 +66,7 @@ def guess_number(update, context):
     else:
         message = 'Введите число:'
     update.message.reply_text(message)  # Ответить в тот же чат в который написали.
+
 
 def send_mem_image(update, context):
     mem_image_list = glob('images/*.jpg')  # Кладем в переменную список картинок подходящих под шаблон.
@@ -82,5 +92,6 @@ def main():
     mybot.start_polling()
     mybot.idle()
 
+
 if __name__ == "__main__":
-        main()
+    main()
