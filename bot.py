@@ -1,6 +1,8 @@
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
-from random import randint
+from glob import glob
 import logging
+from random import randint, choice
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+
 import settings
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s',
@@ -44,7 +46,16 @@ def guess_number(update, context):
             message = 'Введите целое число, а не ебанину'
     else:
         message = 'Введите число:'
-    update.message.reply_text(message)
+    update.message.reply_text(message)  # Ответить в тот же чат в который написали.
+
+def send_mem_image(update, context):
+    mem_image_list = glob('images/*.jpg')  # Кладем в переменную список картинок подходящих под шаблон.
+    mem_pic_filename = choice(mem_image_list)  # Кладем в переменную одно название картинки
+    chat_id = update.effective_chat.id  # id чата с текущим пользователем
+    context.bot.send_photo(chat_id=chat_id, photo=open(mem_pic_filename, 'rb'))  # Функция send_photo объекта bot в
+    # context. Отправляет картинку пользователю. 'rb' формат read binary.
+    # Для отправки картинки мы должны в явном виде указать чат пользователя, которому мы хотим отправить картинку.
+    # Картинка - это бинарный двоичный формат.
 
 
 def main():
@@ -55,10 +66,11 @@ def main():
     dp = mybot.dispatcher
     dp.add_handler(CommandHandler("start", greet_user))
     dp.add_handler(CommandHandler("guess", guess_number))
+    dp.add_handler(CommandHandler("mem", send_mem_image))
     dp.add_handler(MessageHandler(Filters.text, talk_to_me))  # Обработчик сообщений от юзера
 
     mybot.start_polling()
     mybot.idle()
 
-
-main()
+if __name__ == "__main__":
+        main()
